@@ -57,7 +57,7 @@ genCongruence x (Constructor pms cname pos) = do
     let s = genPatternNames "s" pos
     let t = genPatternNames "t" pos
     let bs s = mapM (\(s, Position binders arg) -> do
-                                                  arg_type <-  genArg x m binders arg -- castUpSubst x bs arg m
+                                                  arg_type <-  genArg x m binders arg 
                                                   return $ BinderImplicitNameType [s] arg_type
                                                     ) (zip s pos) -- index, pattern, binders.
     bes <- bs s
@@ -99,7 +99,7 @@ traversal x scope name extras no_args ret bargs args var_case sem funsem = do
                                               return $ Equation (PatternConstructor (idApp cname (underscore_pattern : map TermId (map fst pms))) s) res
   cons_pat <- mapM cons_pattern cs
   let t = TermMatch (MatchItem (TermId s))  (Just $ ret (TermId s)) (var_pattern ++ cons_pat)
-  return $ FixpointBody (name x) (bargs ++ [BinderNameType [s] (idApp x (substTerms scope))]) (ret (TermId s)) t -- Command for BinderNameType
+  return $ FixpointBody (name x) (bargs ++ [BinderNameType [s] (idApp x (substTerms scope))]) (ret (TermId s)) t 
 
 
 -- 4. Definition of Instantiation of Renamings
@@ -313,7 +313,7 @@ genCompRenSubst x = do
                   sem
                   mapComp_
 
-genLemmaCompRenSubst :: TId -> GenM (Lemma, Lemma) --(Lemma, [Lemma])
+genLemmaCompRenSubst :: TId -> GenM (Lemma, Lemma) 
 genLemmaCompRenSubst x = do
   ((k,l), bkl) <- introRenScope ("k", "l") x
   (m, bm) <- introScopeVar "m" x
@@ -327,7 +327,7 @@ genLemmaCompRenSubst x = do
                 return $ sigma >>> idApp (ren_ y) (substTerms zeta')) (zip xs  (substTerms sigma))
   let ret = TermEq (idApp (ren_ x') (substTerms zeta ++ [idApp (subst_ x) $ substTerms sigma  ++ [TermId s]])) (idApp (subst_ x) (sigmazeta ++ [TermId s]))
   let proof = idApp (compSubstRen_ x) (substTerms sigma ++ substTerms zeta ++ map (const TermUnderscore) xs ++ map (const (TermAbs [BinderName "n"] eq_refl_)) xs ++ [TermId s])
-  let ret' = TermEq ((idApp (subst_ x) (substTerms sigma)) >>> (idApp (ren_ x') (substTerms zeta))) (idApp (subst_ x) sigmazeta) -- (substTerms sigma >>> idApp (subst_ x) (substTerms tau)))
+  let ret' = TermEq ((idApp (subst_ x) (substTerms sigma)) >>> (idApp (ren_ x') (substTerms zeta))) (idApp (subst_ x) sigmazeta) 
   let proof' = TermApp fext_ [TermAbs [BinderName "n"] (idApp ("compRen_" ++ x) (substTerms sigma ++ substTerms zeta ++ [TermId "n"]))]
   return (Lemma ("compRen_" ++ x) (bkl ++ bm ++ bsigma ++ bzeta ++ [BinderNameType [s] (idApp x (substTerms m))]) ret (ProofExact proof),
           Lemma ("compRen'_" ++ x) (bkl ++ bm ++ bsigma ++ bzeta) ret' (ProofExact proof'))
@@ -378,7 +378,7 @@ genCompSubstRen x = do
                                   sigma' <- toVar z sigma
                                   zeta' <- castSubst x z zeta
                                   theta' <- toVar z  theta
-                                  return $ idApp (up_subst_ren_ y z) ([TermUnderscore] ++ map (const TermUnderscore) (substTerms zeta') ++ [TermUnderscore, s])) -- ([sigma'] ++ substTerms zeta' ++[theta', s]))
+                                  return $ idApp (up_subst_ren_ y z) ([TermUnderscore] ++ map (const TermUnderscore) (substTerms zeta') ++ [TermUnderscore, s])) 
   toVarT <- toVar x eqs
   x' <- extend_ x
   b_ext <- isExtension x
@@ -402,7 +402,7 @@ genLemmaCompSubstRen x = do
   let s = "s"
   let ret = TermEq (idApp (subst_ x') (substTerms zeta ++ [idApp (ren_ x) $ substTerms xi  ++ [TermId s]])) (idApp (subst_ x) (sigmazeta ++ [TermId s]))
   let proof = idApp (compRenSubst_ x) (substTerms xi ++ substTerms zeta ++ map (const TermUnderscore) xs ++ map (const (TermAbs [BinderName "n"] eq_refl_)) xs ++ [TermId s])
-  let ret' = TermEq ((idApp (ren_ x) (substTerms xi)) >>> (idApp (subst_ x') (substTerms zeta))) (idApp (subst_ x) sigmazeta) -- (substTerms sigma >>> idApp (subst_ x) (substTerms tau)))
+  let ret' = TermEq ((idApp (ren_ x) (substTerms xi)) >>> (idApp (subst_ x') (substTerms zeta))) (idApp (subst_ x) sigmazeta) 
   let proof' = TermApp fext_ [TermAbs [BinderName "n"] (idApp ("renComp_" ++ x) (substTerms xi ++ substTerms zeta ++ [TermId "n"]))]
   return (Lemma ("renComp_" ++ x) (bkl ++ bm ++ bxi ++ bzeta ++ [BinderNameType [s] (idApp x (substTerms m))]) ret (ProofExact proof),
           Lemma ("renComp'_" ++ x) (bkl ++ bm ++ bxi ++ bzeta) ret' (ProofExact proof'))
@@ -488,7 +488,7 @@ genCompSubstSubst x = do
                                   sigma' <- toVar z sigma
                                   tau' <- castSubst x z tau
                                   theta' <- toVar z  theta
-                                  return $ idApp (up_subst_subst_ y z) ([TermUnderscore] ++ map (const TermUnderscore) (substTerms tau') ++ [TermUnderscore, s]))  -- ([sigma'] ++ substTerms tau' ++[theta', s]))
+                                  return $ idApp (up_subst_subst_ y z) ([TermUnderscore] ++ map (const TermUnderscore) (substTerms tau') ++ [TermUnderscore, s])) 
   toVarT <- toVar x eqs
   x' <- extend_ x
   b_ext <- isExtension x
@@ -499,7 +499,7 @@ genCompSubstSubst x = do
   traversal x m compSubstSubst_  (liftM compSubstSubstDeps . genDepRecord) (\s -> TermApp eq_refl_ [s]) ret (bkl ++ bm ++ bsigma ++ btau ++ btheta ++ beqs) [sigma, tau, theta, eqs]
                   (\n -> if b_ext then varC n else varC n) sem mapComp_
 
-genLemmaCompSubstSubst :: TId -> GenM (Lemma, Lemma) --(Lemma, [Lemma])
+genLemmaCompSubstSubst :: TId -> GenM (Lemma, Lemma) 
 genLemmaCompSubstSubst x = do
   ((k,l), bkl) <- introRenScope ("k", "l") x
   (m, bm) <- introScopeVar "m" x
@@ -513,7 +513,7 @@ genLemmaCompSubstSubst x = do
                 return $ sigma >>> idApp (subst_ y) (substTerms tau')) (zip xs  (substTerms sigma))
   let ret = TermEq (idApp (subst_ x') (substTerms tau ++ [idApp (subst_ x) $ substTerms sigma  ++ [TermId s]])) (idApp (subst_ x) (sigmatau ++ [TermId s]))
   let proof = idApp (compSubstSubst_ x) (substTerms sigma ++ substTerms tau ++ map (const TermUnderscore) xs ++ map (const (TermAbs [BinderName "n"] eq_refl_)) xs ++ [TermId s])
-  let ret' = TermEq ((idApp (subst_ x) (substTerms sigma)) >>> (idApp (subst_ x') (substTerms tau))) (idApp (subst_ x) sigmatau) -- (substTerms sigma >>> idApp (subst_ x) (substTerms tau)))
+  let ret' = TermEq ((idApp (subst_ x) (substTerms sigma)) >>> (idApp (subst_ x') (substTerms tau))) (idApp (subst_ x) sigmatau) 
   let proof' = TermApp fext_ [TermAbs [BinderName "n"] (idApp ("compComp_" ++ x) (substTerms sigma ++ substTerms tau ++ [TermId "n"]))]
   return (Lemma ("compComp_" ++ x) (bkl ++ bm ++ bsigma ++ btau ++ [BinderNameType [s] (idApp x (substTerms m))]) ret (ProofExact proof),
           Lemma ("compComp'_" ++ x) (bkl ++ bm ++ bsigma ++ btau) ret' (ProofExact proof'))
@@ -541,7 +541,7 @@ genExtRen x = do
   (xi, bxi) <- genRen x "xi" (m,n)
   (zeta, bzeta) <- genRen x "zeta" (m,n)
   xs <- substOf x
-  (eqs, beqs) <- genEqs x "Eq" (substTerms xi) (substTerms zeta) (\x y s -> return $ idApp (upExtRen_ y x) [TermUnderscore, TermUnderscore, s]) -- TODO: Shouldn't this want SubsttTy instead of Terms?
+  (eqs, beqs) <- genEqs x "Eq" (substTerms xi) (substTerms zeta) (\x y s -> return $ idApp (upExtRen_ y x) [TermUnderscore, TermUnderscore, s]) 
   x' <- extend_ x
   b_ext <- isExtension x
   let ret s = TermEq (idApp (ren_ x) (substTerms xi ++ [s])) (idApp (ren_ x) (substTerms zeta ++ [s]))
@@ -574,13 +574,12 @@ genExt x = do
   (sigma, bsigma) <- genSubst x "sigma" (m,n)
   (tau, btau) <- genSubst x "tau" (m,n)
   xs <- substOf x
-  (eqs, beqs) <- genEqs x "Eq" (substTerms sigma) (substTerms tau) (\x y s -> return$  idApp (upExt_ y x) [TermUnderscore, TermUnderscore, s]) -- TODO: Shouldn't this want SubsttTy instead of Terms?
-  let ret s = TermEq (idApp (subst_ x) (substTerms sigma ++ [s])) (idApp (subst_ x) (substTerms tau ++ [s]))
+  (eqs, beqs) <- genEqs x "Eq" (substTerms sigma) (substTerms tau) (\x y s -> return$  idApp (upExt_ y x) [TermUnderscore, TermUnderscore, s]) 
   toVarT <- toVar x eqs
   x' <- extend_ x
   b_ext <- isExtension x
   traversal x m ext_ (liftM extDeps . genDepRecord) (\s -> TermApp eq_refl_ [s]) ret (bmn ++ bsigma ++ btau ++ beqs) [sigma, tau, eqs]
-                  (\z ->  TermApp toVarT [z])   -- TODO: I didn't need the renaming case for Up. Dive into that.
+                  (\z ->  TermApp toVarT [z])   
                   (\_ c cs -> return$ idApp (if b_ext then "" else congr_ (if x == x' then c else smart_ c)) cs)
                   mapExt_
 
@@ -614,7 +613,7 @@ genRinstInst x = do
   xis' <- mapM (\(y, xi) -> do
     n' <- castSubst x y n
     return$  xi >>> var y n') (zip xs (substTerms xi))
-  (eqs, beqs) <- genEqs x "Eq" xis' (substTerms sigma) (\x y s -> return $  idApp (up_rinstInst_ y x) [TermUnderscore, TermUnderscore, s]) -- TODO: Make this last part general: Allow a function whihc takes SubstTy arguments and then automatically gives right terms.
+  (eqs, beqs) <- genEqs x "Eq" xis' (substTerms sigma) (\x y s -> return $  idApp (up_rinstInst_ y x) [TermUnderscore, TermUnderscore, s]) 
   x' <- extend_ x
   b_ext <- isExtension x
   let ret s = TermEq (idApp (ren_ x) (substTerms xi ++ [s])) (idApp (subst_ x) (substTerms sigma ++ [s]))
@@ -665,7 +664,7 @@ genLemmaInstId x = do
   x' <- extend_ x
   let mid = if x == x' then TermConst (Id) else TermId inj_
       ret = TermEq (idApp (subst_ x) vars) mid
-  let proof = TermApp fext_ [TermAbs [BinderName "x"] (idApp (idSubst_ x) ( vars ++ (map (const (TermAbs [BinderName "n"] eq_refl_)) xs) ++ [TermApp (TermConst Id) [TermId "x"]]))] -- (idApp x (substTerms m))
+  let proof = TermApp fext_ [TermAbs [BinderName "x"] (idApp (idSubst_ x) ( vars ++ (map (const (TermAbs [BinderName "n"] eq_refl_)) xs) ++ [TermApp (TermConst Id) [TermId "x"]]))] 
   return $ Lemma ("instId_" ++ x) bm ret (ProofExact proof)
 
 genLemmaRinstId :: TId -> GenM Lemma

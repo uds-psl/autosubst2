@@ -12,15 +12,15 @@ import           Control.Monad.Reader
 import           Control.Monad.State.Lazy
 import           Data.List                as L
 
+-- Contains the code Generation necessary for only modular syntax.
 
+-- 1.) Code for turning definitions into hypotheses
 
 -- Depending on the arguments, create a constructor or its smart constructor
 modConstructor :: Bool -> Bool -> TId -> TId
 modConstructor True _ _      = ""
 modConstructor False True c  = c
 modConstructor False False c = smart_ c
-
--- 1.) Code for turning definitions into hypotheses
 
 -- Assuming definitions.
 hypoDef :: Definition -> [Sentence]
@@ -71,7 +71,7 @@ genSmartArg x n bs (FunApp f p xs) = do
 -- Generation of smart constructors.
 genSmart :: TId ->  Constructor -> GenM Definition
 genSmart x (Constructor pms cname pos) = do
-    x' <- return x -- getExtension x, TODO: What do I want here?
+    x' <- return x
     (m, bm) <- introScopeVar "m" x
     let s = genPatternNames "s" pos
     let bs s = mapM (\(y, Position binders arg) -> do
@@ -98,7 +98,6 @@ genSmarts x = do
 -- 3.) Generation of Retracts 
 
 -- Generation of retracts assumption.
--- TODO: Generalize retract name.
 genRetractAssumption :: TId -> TId -> GenM Sentence
 genRetractAssumption x y = do
   let s = idApp retract_ [TermId x, TermId y]
@@ -170,13 +169,13 @@ genIns :: [(TId, TId)] -> GenM [Definition]
 genIns xs = mapM (\(x,y) -> genIn y x) xs
 
 -- Generation of induction lemma for In predicate. 
--- Attention: Not compatible with scoped syntax and parameters so far.
+-- Attention: This predicate is incompatible with scoped syntax and parameters so far.
 genInProof :: TId -> GenM FixpointBody
 genInProof x = do
   cs <- constructors x -- The in-things.
-  let args = map (\(Constructor pms c ps) -> map (\(Position bs a) -> a) ps) cs -- List of below arguments. TODO: Handle parameters
+  let args = map (\(Constructor pms c ps) -> map (\(Position bs a) -> a) ps) cs -- List of below arguments. LATER: Handle parameters
       p = BinderNameType ["P"] (TermFunction (TermId x) (TermSort Prop)) -- main predicate
-      ihbs = map (\(Constructor pms c [Position _ y']) -> case y' of Atom y -> BinderNameType ["IH_" ++ c] -- TODO: Take care of parameters.
+      ihbs = map (\(Constructor pms c [Position _ y']) -> case y' of Atom y -> BinderNameType ["IH_" ++ c] -- LATER: Take care of parameters.
                                                                               (TermForall [BinderName "t"]
                                                                               (TermFunction (TermForall [BinderName "x"]
                                                                               (TermFunction (idApp (isIn_ x y) [TermUnderscore, TermId "x", TermId "t"])
@@ -188,16 +187,16 @@ genInProof x = do
       bs = [p] ++ ihbs ++ [e]
       ret = idApp "P" [TermId "s"]
       solve t eq = idApp "eq_ind_r" [TermUnderscore, idApp (inProof_ x) (TermUnderscore : ihs ++ [t]), eq]
-      hs ps = orPattern (length $ filter (\(Position _ a) -> a == Atom x) ps) (TermId "H") -- TODO: Handle other case than Atom
+      hs ps = orPattern (length $ filter (\(Position _ a) -> a == Atom x) ps) (TermId "H") -- LATER: Add functors.
       term c css ps (Atom y) = TermAbs [BinderName "t", BinderNameType ["H"] (idApp (isIn_ x y) [TermUnderscore, TermUnderscore, idApp c (map (\x -> TermUnderscore) css ++ map (\x -> TermUnderscore) ps)])] (TermMatch
         (MatchItem (TermId "H")) Nothing (map (\x -> Equation (PatternConstructor x []) (solve TermUnderscore (TermId "H"))) (hs (ps))))
       term _ _ _ _ = TermId "Error"
   ccs <- mapM (\y -> constructors y) (concat [[x]]) -- TODO: Should be args instead of [x] for more complicated types
-  pat <- mapM (\(Constructor pms c [Position bs z]) -> do -- TODO: Take care of parameters.
+  pat <- mapM (\(Constructor pms c [Position bs z]) -> do -- LATER: Take care of parameters.
                           let ps = [Position bs z]
                           css <- liftM concat (mapM (\(Position bs a) -> constructors x) ps) -- x should be a
                           zs <- realDeps x 
-                          return $ map (\(Constructor pms c' ps) -> (c, c', zs, ps, [idApp c' (map (\x -> TermUnderscore) zs ++ (map TermId  (genPatternNames "s" ps)))], z)) css -- TODO: Take care of parameters.
+                          return $ map (\(Constructor pms c' ps) -> (c, c', zs, ps, [idApp c' (map (\x -> TermUnderscore) zs ++ (map TermId  (genPatternNames "s" ps)))], z)) css -- LATER: Take care of parameters.
                     ) cs
   let equations (c, c', css, ps, [p], y) = Equation (PatternConstructor (idApp c [p]) []) (getTerm ("IH_" ++ c) (term c' css ps y))
       body = TermMatch (MatchItem (TermId "s")) Nothing (map equations (concat pat)) -- equations
@@ -220,12 +219,13 @@ data DepRecord = DepRecord
   , compSubstSubstDeps :: [Term]
   }
 
+-- Contains the dependencies for all substitution functions/lemmas.
 genDepRecord :: TId -> GenM DepRecord
 genDepRecord x = do
   b <- isFeature x
   subsorts <- realDeps x
   dps <- arguments x
-  substsorts <- if b then filterM isOpenComponent subsorts else return [] -- TODO: This is not correct.
+  substsorts <- if b then filterM isOpenComponent subsorts else return [] 
   substargsorts <- if b then filterM isOpenComponent dps else return []
   varsorts <- filterM isOpenComponent (if b then dps else [])
   mups <- directUps x
