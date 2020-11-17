@@ -1,6 +1,7 @@
+cod : Functor
+
 term  : Type
 form  : Type
-
 
 Func (f : nat) : "cod (fin f)" (term) -> term
 Fal : form

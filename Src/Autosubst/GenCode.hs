@@ -94,7 +94,8 @@ printPreamble Coq file b = tell [(fromMaybe "" file, coqPreamble <$$> empty)]
 printPreamble UCoq file b = tell [(fromMaybe "" file, ucoqPreamble b <$$> empty)]
 printPreamble ECoq file b = tell [(fromMaybe "" file, ecoqPreamble <$$> empty)]
 
--- Printing of a list of sentences with the corresponding prover
+-- Printing of a list of sentences with the corresponding prover.
+-- tellProver p f s prints with a printer p, into a file with possible prefix f, the list of sentences s.
 tellProver :: Prover -> Maybe String -> [Sentence] -> GenM ()
 tellProver Coq  file c  = tell ([(fromMaybe "" file,  empty <$$> vsep (map (\s -> coqShow s <$$> empty) c))])
 tellProver UCoq file c = tell ([(fromMaybe "" file,  empty <$$> vsep (map (\s -> ucoqShow s <$$> empty) c))])

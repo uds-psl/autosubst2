@@ -1,4 +1,5 @@
 -- Call-by-Push-Value with a recursive let, uses variadic syntax
+cod : Functor 
 
 value : Type
 comp : Type

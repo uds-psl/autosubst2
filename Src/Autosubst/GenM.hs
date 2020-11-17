@@ -246,7 +246,6 @@ prev' x = do
                   y <- extend_ z
                   return $ (x == y && x /= z)) ts
 
--- TODO: Look over this.
 isExtension :: TId -> GenM Bool
 isExtension x = do
   args <- arguments x
@@ -313,7 +312,9 @@ addFeatureArgs x = do
   xs <- depsArgs x
   return $  x ++ " " ++ concat (L.intersperse " " xs)
 
--- Compatibility Check 
+-- 3. Compatibility Checking
+
+-- Yields a list of all binders that are actually used.
 sigActualBinders :: GenM [(Binder, TId)]
 sigActualBinders = do
   xs <- allSorts' 
@@ -322,13 +323,14 @@ sigActualBinders = do
     bs = concatMap (\(Constructor _ _ pos) -> concatMap (\(Position bs arg) -> map (\a -> map (\b -> (b, a)) bs) (argSorts arg)) pos) (concat cs)
   return $ nub (concat bs)
 
+-- Checks whether 
 hasVariadicBinders :: GenM Bool 
 hasVariadicBinders = do 
   bs <- sigActualBinders 
   return $ not $ null $ (filter (\(b, _) -> case b of Single _ -> False
                                                       _ -> True) bs)
 
-
+-- Yields an error message if incompatible modes are mixed.
 checkIncompatibility :: Prover -> GenM ()
 checkIncompatibility p = do
   isMod <- sigMod

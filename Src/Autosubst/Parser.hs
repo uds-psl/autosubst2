@@ -114,7 +114,7 @@ tokenize = runParser tokens ()
 
 -- A specfication AST contains:
 type SpecAST = (
-                [TId], -- - The list of declared sorts, optionally within a feature (* TODO: WRONG *) 
+                [TId], -- - The list of declared sorts
                 [FId], -- - A list of declared functors 
                 [ConstructorAST],  -- - A list of ASTs for constructors on the top-level
                 [(FId, [ConstructorAST])], -- - A list of ASTs for constructors in features 
@@ -206,7 +206,7 @@ parseEnd = do
 parseSpec :: TokParser SpecAST
 parseSpec = do
   xs <- many parseDef
-  let (x1, ys) = partitionEithers xs -- TODO: How does this fit if I want ([TId], Maybe String)
+  let (x1, ys) = partitionEithers xs
       (x11, x12) = partitionEithers x1
       (x2, zs) = partitionEithers ys
       (x3, x4) = partitionEithers zs
@@ -280,7 +280,7 @@ parseFeature = do
   x <- parseBegin
   xs <- many parseConstructorDef
   y <- parseEnd
-  return $ if (x == y) then (x, xs) else (x, xs) -- TODO: Throw an error, if x and y are unequal.
+  if (x == y) then return (x, xs) else unexpected ("Modular syntax block start " ++ x ++ " and block end " ++ y ++ " do not coincide.")
 
 -- 5. Parser for Variants
 parseVariant :: TokParser (TId, [TId])
@@ -296,16 +296,17 @@ parseVariant = do
 -- State Monad for Semantic Analysis, with a specification, used identifiers (possibly within a feature), and available injections (needed for modular syntax).
 data SaState = SaState
   { spec       :: Spec -- specification
-  , usedIds    :: [TId] -- used identifiers, possibly within a feature, TODO: Maube just [TId]
+  , usedIds    :: [TId] -- used identifiers, possibly within a feature
+  , usedFIds :: [FId]
   , injections :: [(TId, TId)] -- available injections
   }
 
 type SA = StateT SaState (Except String)
 
 -- Run of the state monad 
-runSA :: Spec -> SA () -> Either String (Spec, [TId], [(TId, TId)]) -- TODO: Why not simply return SaState?
-runSA s sa = runExcept $ f <$> s' -- (spec <$> s', usedIds <$> s')
-  where initialState = SaState s [] []
+runSA :: Spec -> SA () -> Either String (Spec, [TId], [(TId, TId)]) 
+runSA s sa = runExcept $ f <$> s'
+  where initialState = SaState s [] [] []
         s' = execStateT sa initialState
         f :: SaState -> (Spec, [TId], [(TId, TId)])
         f s = (spec s, usedIds s, injections s)
@@ -331,11 +332,12 @@ reservedIds = S.fromList
 -- Yields a parser specfication, i.e. existing sorts, existing functors, the specification, injections, and variants
 checkSpec :: SpecAST -> Either String ParserSpec
 checkSpec (tps, fs, cs, features, combinations) = do
-  (spec, tps', dps) <- runSA emptySpec $ declareTypes >>  mapM_ (checkConstructor Nothing) cs >> mapM_ checkFeature features -- dps yields the injections
+  (spec, tps', dps) <- runSA emptySpec $ declareTypes >> declareFunctors >> mapM_ (checkConstructor Nothing) cs >> mapM_ checkFeature features -- dps yields the injections
   return (reverse tps', fs, spec, dpf dps, combinations)
   where emptySpec = M.fromList $ map (\k -> (k,[])) tps
         declareTypes = mapM_ declareId tps 
-        dpf dps x = concatMap (\(y, z) -> if (y == x) then [z] else []) dps -- TOOD: Why exactly this type?
+        declareFunctors = mapM_ declareFId fs
+        dpf dps x = concatMap (\(y, z) -> if (y == x) then [z] else []) dps
 
 -- a. Declaration of types, check that no type name is a keyword according to the Coq manual and no type is defined twice
 declareId :: Id -> SA ()
@@ -347,12 +349,20 @@ declareId x = do
      then throwError $ "identifier '" ++ x ++ "' is reserved"
      else modify $ \state -> state{ usedIds = x : ids }
 
+declareFId :: Id -> SA ()
+declareFId x = do
+  ids <- usedFIds <$> get
+  if x `elem` ids
+    then throwError $ "identifier '" ++ x ++ "' is defined twice" 
+    else if x `S.member` reservedIds
+     then throwError $ "identifier '" ++ x ++ "' is reserved"
+     else modify $ \state -> state{ usedFIds = x : ids }
+
 -- b. Checking of constructors, optional argument for feature ctx. 
 checkConstructor :: Maybe String -> ConstructorAST -> SA ()
 checkConstructor ctx (x,pms,typ) = do
-  --  declareId x -- declaration of the Constructor name. TODO What happens with features?
   (_, ps,tp) <- checkPositions ctx typ
-  declareConstructor tp (Constructor pms x ps) -- TODO: This is where one could also maybe add optional constructors?
+  declareConstructor tp (Constructor pms x ps)
 
 -- i. Checking of positions: Gets a syntax tree and yields a position.
 
@@ -370,7 +380,7 @@ checkPositions ctx (ArrowAST b tp) = do
   (pm,p) <- checkPosition b
   (pms, ps, t) <- checkPositions ctx tp
   return (pm ++ pms, p:ps, t)
--- checkPositions s = throwError ("result type must be pure" ++ " " ++ show s)
+checkPositions _ (VariadicAST _ s) = throwError ("Variadic binder " ++ " " ++ show s ++ " not supported in the result type.")
 
 
 -- Check of a single position.  
@@ -388,7 +398,6 @@ checkPosition (ArrowAST (VariadicAST m x) b) = do -- variadic binder
   return $ (pms, Position ((BinderList m x) : bs) a)
 checkPosition (ArrowAST (ArrowAST _ _) _) = throwError "third-order constructors are not supported"
 checkPosition _ = throwError "binding of functors is not supported"
--- TODO: Insert checking that Variadic binders in the main argument are not allowed. 
 
 -- Check an argument
 checkArgument :: FunctorAST -> SA Argument
@@ -396,7 +405,7 @@ checkArgument (AtomAST x) = do
     checkTId x
     return $ Atom x
 checkArgument (FunctorAST f pms xs) = do
-    checkTId f -- TODO: Change to checkFId.
+    checkFId f 
     xs' <- mapM checkArgument xs
     return $ FunApp f pms xs'
 
@@ -404,9 +413,16 @@ checkArgument (FunctorAST f pms xs) = do
 checkTId :: TId -> SA ()
 checkTId tp = do
   s <- spec <$> get
-  if True -- tp `M.member` s -- TODO: FIX THIS. 
+  if tp `M.member` s
     then return ()
-    else throwError $ "unknown type '" ++ tp ++ "'"
+    else throwError $ "unknown sort '" ++ tp ++ "'"
+
+checkFId :: FId -> SA ()
+checkFId tp = do
+  s <- usedFIds <$> get
+  if tp `elem` s
+    then return ()
+    else throwError $ "unknown functor '" ++ tp ++ "'"
 
 -- ii. Declaration of constructor: Update to the specification after checking positions, and add the new constructor to the specification.
 declareConstructor :: TId -> Constructor -> SA ()
@@ -418,7 +434,7 @@ declareConstructor tp c =
 checkFeature :: (TId, [ConstructorAST]) -> SA ()
 checkFeature (x, cs) =  mapM_ (checkConstructor (Just x)) cs
 
--- d. Checking of combinations : TODO Add. We can start with just giving this on. 
+-- d. Checking of combinations : So far, nothing is checked to ensure that all features exist.
 checkCombination :: [(TId, [TId])] -> SA ()
 checkCombination xs = return ()
 
