@@ -43,7 +43,7 @@ generateCode p out = do
   varSorts <- getVarSorts
   substSorts <- getSubstSorts
   allSorts <- allSorts'
-  ups <- getUps p
+  ups <- sigActualBinders 
   variants <- asks sigVariants  
   isMod <- sigMod
   let sortsWithoutFeatures = filter (\(x, y, m) -> not (isJust m)) fullspec
@@ -51,15 +51,15 @@ generateCode p out = do
   -- Generation of code
   printPreamble p Nothing isMod >> mapM (\x -> printPreamble p (Just x) isMod) allFeatures -- printing of the preamble in all files
   tellProver p Nothing [SentenceRequireExport (map (\x -> lastName x out) allFeatures)] -- Printing of exports in the base file
-  genCode p out ups fullspec Nothing -- Generate 
+  genCode p out ups fullspec Nothing -- Generate          
   generateModCode p ups spec -- Generate modular code, TODO: Ensure this is printed in the version directly
   auto <- genAutomation varSorts allSorts substSorts ups -- Generate automation
-  tellProver p Nothing auto -- TODO: DO THIS.
-  mapM (\(name, vs) -> put (Just vs) >> genCode p out ups sortsWithoutFeatures (Just name)) variants -- Print code for all variants
+  tellProver p Nothing auto -- Printing of the automation
+  mapM (\(name, vs) -> put (Just vs) >> genCode p out ups sortsWithoutFeatures (Just name) >> tellProver p (Just name) auto) variants -- Print code for all variants
   return ()
 
 
--- Generates code for a list of up-pairs [(Binder, TId)] and a list of components [([TId], [TId])].
+-- Generates code for a list of up-pairs [(Binder, TId)] and   a list of components [([TId], [TId])].
 genCode :: Prover -> String -> [(Binder, TId)] -> [([TId], [TId], Maybe String)] -> Maybe String -> GenM ()
 genCode p out all xs file = do
   possibleFeatures <- get

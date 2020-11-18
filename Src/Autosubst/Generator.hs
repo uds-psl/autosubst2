@@ -575,6 +575,7 @@ genExt x = do
   (tau, btau) <- genSubst x "tau" (m,n)
   xs <- substOf x
   (eqs, beqs) <- genEqs x "Eq" (substTerms sigma) (substTerms tau) (\x y s -> return$  idApp (upExt_ y x) [TermUnderscore, TermUnderscore, s]) 
+  let ret s = TermEq (idApp (subst_ x) (substTerms sigma ++ [s])) (idApp (subst_ x) (substTerms tau ++ [s]))
   toVarT <- toVar x eqs
   x' <- extend_ x
   b_ext <- isExtension x

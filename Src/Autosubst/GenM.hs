@@ -314,14 +314,17 @@ addFeatureArgs x = do
 
 -- 3. Compatibility Checking
 
--- Yields a list of all binders that are actually used.
+-- Yields a list of all binders that are actually used
 sigActualBinders :: GenM [(Binder, TId)]
 sigActualBinders = do
   xs <- allSorts' 
   cs <- mapM constructors xs 
   let 
     bs = concatMap (\(Constructor _ _ pos) -> concatMap (\(Position bs arg) -> map (\a -> map (\b -> (b, a)) bs) (argSorts arg)) pos) (concat cs)
-  return $ nub (concat bs)
+  bs' <- mapM (\(b, a) -> do
+                          as <- substOf a
+                          return $ map (\a -> (b, a)) as) (concat bs)
+  return $ nub (concat bs')
 
 -- Checks whether 
 hasVariadicBinders :: GenM Bool 
