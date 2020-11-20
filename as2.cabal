@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      src
+  hs-source-dirs:      Src
   exposed-modules:     Autosubst.GenM
                      , Autosubst.GenCode
                      , Autosubst.Types

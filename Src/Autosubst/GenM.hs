@@ -22,9 +22,9 @@ ifM b xs = do
   xs' <- xs
   return $ if b then xs' else []
 
-instance Monoid Doc where
-  mappend = (Text.PrettyPrint.Leijen.<>)
-  mempty = empty
+-- instance Monoid Doc where
+--   mappend = (Text.PrettyPrint.Leijen.<>)
+--   mempty = empty
 
 -- Scope type: Maps an identifier to a number.
 type Scope = Maybe [FtId]
