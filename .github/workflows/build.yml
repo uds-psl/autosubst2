@@ -12,8 +12,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.stack
             ~/.opam
+            ~/.stack
           key: stack-${{github.base_ref}}-${{github.ref}} 
           restore-keys: |
             stack--refs/heads/${{github.base_ref}}
