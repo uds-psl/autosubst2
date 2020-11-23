@@ -17,9 +17,8 @@ jobs:
             stack--refs/heads/${{github.base_ref}}
 
       - name: Install Haskell
-        uses: actions/setup-haskell@v1.1
+        uses: actions/setup-haskell@v1.1.3
         with:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           enable-stack: true
           stack-version: 'latest'
 
