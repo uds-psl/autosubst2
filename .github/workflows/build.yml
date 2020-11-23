@@ -19,6 +19,7 @@ jobs:
       - name: Install Haskell
         uses: actions/setup-haskell@v1.1
         with:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           enable-stack: true
           stack-version: 'latest'
 
