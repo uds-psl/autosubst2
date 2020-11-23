@@ -1,0 +1,32 @@
+name: Test compilation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Try to restore stack cache
+        id: stack-cache
+        uses: actions/cache@v2
+        with:
+          path: "~/.stack"
+          key: stack-${{github.base_ref}}-${{github.ref}} 
+          restore-keys: |
+            stack--refs/heads/${{github.base_ref}}
+
+      - name: Install Haskell
+        uses: actions/setup-haskell@v1.1
+        with:
+          enable-stack: true
+          stack-version: 'latest'
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - run: stack setup
+      - run: stack init
+      - run: stack build
