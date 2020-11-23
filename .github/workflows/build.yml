@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - name: Try to restore stack cache
+      - name: Try to restore stack and opam
         id: stack-cache
         uses: actions/cache@v2
         with:
-          path: "~/.stack"
+          path: ["~/.stack", "~/.opam"]
           key: stack-${{github.base_ref}}-${{github.ref}} 
           restore-keys: |
             stack--refs/heads/${{github.base_ref}}
@@ -22,11 +22,24 @@ jobs:
           enable-stack: true
           stack-version: 'latest'
 
+      - name: Install OCaml
+        uses: avsm/setup-ocaml@v1
+        with:
+          ocaml-version: 4.07.1+flambda
+
+      - name: Install Coq
+        run: opam repo add coq-released https://coq.inria.fr/opam/released
+        run: opam install coq-8.12.1
+
       - name: Checkout code
         uses: actions/checkout@v2
         with:
           fetch-depth: 1
 
-      - run: stack setup
-      - run: stack init
-      - run: stack build
+      - name: Compile Autosubst 2
+        run: stack setup
+        run: stack init
+        run: stack build
+
+      - name: Run Autosubst 2 on signatures
+        run: opam exec -- make -C signatures
