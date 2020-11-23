@@ -11,7 +11,9 @@ jobs:
         id: stack-cache
         uses: actions/cache@v2
         with:
-          path: ["~/.stack", "~/.opam"]
+          path: |
+            ~/.stack
+            ~/.opam
           key: stack-${{github.base_ref}}-${{github.ref}} 
           restore-keys: |
             stack--refs/heads/${{github.base_ref}}
@@ -28,8 +30,9 @@ jobs:
           ocaml-version: 4.07.1+flambda
 
       - name: Install Coq
-        run: opam repo add coq-released https://coq.inria.fr/opam/released
-        run: opam install coq-8.12.1
+        run: |
+          opam repo add coq-released https://coq.inria.fr/opam/released
+          opam install coq-8.12.1
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -37,9 +40,10 @@ jobs:
           fetch-depth: 1
 
       - name: Compile Autosubst 2
-        run: stack setup
-        run: stack init
-        run: stack build
+        run: |
+          stack setup
+          stack init
+          stack build
 
       - name: Run Autosubst 2 on signatures
         run: opam exec -- make -C signatures
