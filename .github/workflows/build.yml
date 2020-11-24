@@ -1,0 +1,49 @@
+name: Test compilation
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Try to restore stack and opam
+        id: stack-cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.opam
+            ~/.stack
+          key: stack-${{github.base_ref}}-${{github.ref}} 
+          restore-keys: |
+            stack--refs/heads/${{github.base_ref}}
+
+      - name: Install Haskell
+        uses: actions/setup-haskell@v1.1.3
+        with:
+          enable-stack: true
+          stack-version: 'latest'
+
+      - name: Install OCaml
+        uses: avsm/setup-ocaml@v1
+        with:
+          ocaml-version: 4.07.1+flambda
+
+      - name: Install Coq
+        run: |
+          opam repo add coq-released https://coq.inria.fr/opam/released
+          opam install coq.8.12.1
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Compile Autosubst 2
+        run: |
+          stack setup
+          stack init
+          stack build
+
+      - name: Run Autosubst 2 on signatures
+        run: opam exec -- make -C signatures
