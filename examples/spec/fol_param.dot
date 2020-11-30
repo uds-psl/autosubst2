@@ -1,0 +1,19 @@
+strict digraph {
+    node [shape=plaintext
+         ,fontsize=8];
+    term [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">open </FONT><FONT COLOR="white">term</FONT><FONT COLOR="gray">[term]</FONT></TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Func</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">cod &#32;(fun_ar f) term → term</TD></TR></TABLE>>];
+    form [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">form</FONT><FONT COLOR="gray">[term]</FONT></TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Fal</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Pred</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">cod &#32;(pred_ar P) term → form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Impl</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">form → form → form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Conj</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">form → form → form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Disj</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">form → form → form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">All</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">(term → form) → form</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">Ex</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">(term → form) → form</TD></TR></TABLE>>];
+    Preds [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">Preds</FONT></TD></TR></TABLE>>];
+    Funcs [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">Funcs</FONT></TD></TR></TABLE>>];
+    term -> term;
+    form -> term;
+    form -> form;
+}

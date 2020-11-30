@@ -1,0 +1,14 @@
+strict digraph {
+    node [shape=plaintext
+         ,fontsize=8];
+    chan [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">open </FONT><FONT COLOR="white">chan</FONT><FONT COLOR="gray">[chan]</FONT></TD></TR></TABLE>>];
+    proc [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">proc</FONT><FONT COLOR="gray">[chan]</FONT></TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">par</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">proc → proc → proc</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">input</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">chan → (chan → proc) → proc</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">output</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">chan → chan → proc → proc</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">repl</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">proc → proc</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">restr</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">(chan → proc) → proc</TD></TR>
+                                                                  <TR><TD ALIGN="RIGHT">nil</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">proc</TD></TR></TABLE>>];
+    proc -> proc;
+    proc -> chan;
+}

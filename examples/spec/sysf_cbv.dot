@@ -1,0 +1,22 @@
+strict digraph {
+    node [shape=plaintext
+         ,fontsize=8];
+    subgraph cluster {
+        tm [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">tm</FONT><FONT COLOR="gray">[ty,vl]</FONT></TD></TR>
+                                                                    <TR><TD ALIGN="RIGHT">app</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">tm → tm → tm</TD></TR>
+                                                                    <TR><TD ALIGN="RIGHT">tapp</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">tm → ty → tm</TD></TR>
+                                                                    <TR><TD ALIGN="RIGHT">vt</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">vl → tm</TD></TR></TABLE>>];
+        vl [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">open </FONT><FONT COLOR="white">vl</FONT><FONT COLOR="gray">[ty,vl]</FONT></TD></TR>
+                                                                    <TR><TD ALIGN="RIGHT">lam</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">ty → (vl → tm) → vl</TD></TR>
+                                                                    <TR><TD ALIGN="RIGHT">tlam</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">(ty → tm) → vl</TD></TR></TABLE>>];
+        tm -> tm;
+        tm -> ty;
+        tm -> vl;
+        vl -> ty;
+        vl -> tm;
+    }
+    ty [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">open </FONT><FONT COLOR="white">ty</FONT><FONT COLOR="gray">[ty]</FONT></TD></TR>
+                                                                <TR><TD ALIGN="RIGHT">arr</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">ty → ty → ty</TD></TR>
+                                                                <TR><TD ALIGN="RIGHT">all</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">(ty → ty) → ty</TD></TR></TABLE>>];
+    ty -> ty;
+}

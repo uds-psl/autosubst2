@@ -1,0 +1,47 @@
+strict digraph {
+    node [shape=plaintext
+         ,fontsize=8];
+    subgraph cluster {
+        valtype [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">valtype</FONT></TD></TR>
+                                                                         <TR><TD ALIGN="RIGHT">zero</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                         <TR><TD ALIGN="RIGHT">one</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                         <TR><TD ALIGN="RIGHT">U</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                         <TR><TD ALIGN="RIGHT">Sigma</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                         <TR><TD ALIGN="RIGHT">cross</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR></TABLE>>];
+        comptype [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">comptype</FONT></TD></TR>
+                                                                          <TR><TD ALIGN="RIGHT">cone</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                          <TR><TD ALIGN="RIGHT">F</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                          <TR><TD ALIGN="RIGHT">Pi</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                          <TR><TD ALIGN="RIGHT">arrow</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR></TABLE>>];
+        valtype -> comptype;
+        valtype -> valtype;
+        comptype -> valtype;
+        comptype -> comptype;
+    }
+    subgraph cluster {
+        value [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">open </FONT><FONT COLOR="white">value</FONT><FONT COLOR="gray">[value]</FONT></TD></TR>
+                                                                       <TR><TD ALIGN="RIGHT">u</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                       <TR><TD ALIGN="RIGHT">pair</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                       <TR><TD ALIGN="RIGHT">inj</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                       <TR><TD ALIGN="RIGHT">thunk</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR></TABLE>>];
+        comp [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">comp</FONT><FONT COLOR="gray">[value]</FONT></TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">cu</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">force</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">lambda</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">app</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">tuple</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">ret</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">letin</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">proj</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">caseZ</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">caseS</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR>
+                                                                      <TR><TD ALIGN="RIGHT">caseP</TD> <TD ALIGN="CENTER">:</TD> <TD ALIGN="LEFT">FIXME</TD></TR></TABLE>>];
+        value -> value;
+        value -> bool;
+        value -> comp;
+        comp -> value;
+        comp -> comp;
+        comp -> bool;
+    }
+    bool [label=<<TABLE BORDER="1" CELLBORDER="0" CELLSPACING="1"><TR><TD ALIGN="CENTER" COLSPAN="3" BGCOLOR="black"><FONT COLOR="gray">closed </FONT><FONT COLOR="white">bool</FONT></TD></TR></TABLE>>];
+}
