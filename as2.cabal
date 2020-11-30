@@ -14,8 +14,9 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      Src
+  hs-source-dirs:      src
   exposed-modules:     Autosubst.GenM
+                     , Autosubst.GenDot
                      , Autosubst.GenCode
                      , Autosubst.Types
                      , Autosubst.Parser
@@ -25,9 +26,11 @@ library
                      , Autosubst.ModularGenerator
                      , Autosubst.Tactics
                      , Autosubst.Names
-                     , Autosubst.PrintScoped
-                     , Autosubst.PrintUnscoped
-                     , Autosubst.GenAutomation
+                     , Autosubst.Coq
+                     , Autosubst.UCoq
+                     , Autosubst.Lean
+                     , Autosubst.Agda
+                     , Autosubst.Automation
   build-depends:       base >= 4.7 && < 5
                      , parsec >= 3.1.11
                      , containers >= 0.5
@@ -51,7 +54,7 @@ executable as2-exe
 
 test-suite as2-test
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      
+  hs-source-dirs:      test
   main-is:             Spec.hs
   other-modules:       GenSpec
                      , ParseTest

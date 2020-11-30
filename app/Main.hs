@@ -1,6 +1,7 @@
 module Main where
 
 import           Autosubst.GenCode
+import           Autosubst.GenDot
 import           Autosubst.GenM
 import           Autosubst.Parser
 import           Autosubst.Signature
@@ -11,7 +12,6 @@ import           System.Directory
 import           System.Environment
 import           System.IO
 import           Text.PrettyPrint.Leijen (Doc, displayS, renderPretty)
-import           Data.List  
 
 -- cmd argument structure
 data Arguments = Args
@@ -19,11 +19,11 @@ data Arguments = Args
   , prover         :: Prover
   , forceOverwrite :: Bool
   , coqFile        :: Maybe String
+  , dotFile        :: Maybe String
   , lineWidth      :: Int }
   deriving (Show, Read)
 
 -- the parser for comamnd line args
--- TODO: Update.
 args :: Parser Arguments
 args = Args
   <$> (optional $ strOption
@@ -36,7 +36,7 @@ args = Args
       <> short 'p'
       <> metavar "PROVER"
       <> value Coq
-      <> help "Prover for which code is generated. Choose Coq for well-scoped de Bruijn, UCoq for unscoped de Bruijn, ECoq to generate unscoped modular boilerplate without substitution boilerplate. Default is well-scoped Coq code." ))
+      <> help "Prover for which code is generated. Choose Coq for well-scoped de Bruijn, UCoq for unscoped de Bruijn, ECoq to generate just unscoped modular boilerplate. Default is well-scoped Coq code." ))
   <*> switch
       ( short 'f'
       <> help "If set, program writes output files without checking if said files already exist.")
@@ -44,7 +44,12 @@ args = Args
       ( long "output"
       <> short 'o'
       <> metavar "OUT"
-      <> help "The generated base Coq source file, extension of this name might be used when modular boilerplate is used. Writes to stdout if omitted." ))
+      <> help "The generated Coq source file. Writes to stdout if omitted." ))
+  <*> (optional $ strOption
+      ( long "dot"
+      <> short 'd'
+      <> metavar "DOT"
+      <> help "Specify if diagnostic containment graph should be written out in dor format." ))
   <*> option auto
       ( long "width"
       <> short 'w'
@@ -58,51 +63,41 @@ main = mainProg =<< execParser opts
   where
     opts = info (args <**> helper)
       ( fullDesc
-     <> progDesc "Compiles a HOAS style syntax specification SPEC to a Coq source file with corresponding inductively defined de Bruijn sorts and corresponding multivariate parallel substitution operations."
+     <> progDesc "Compiles a HOAS style syntax specification SPEC to a Coq source file with corresponding inductively defined de Bruijn sorts and corresponding multivariate parallel substitution operations. Optionally outputs structural information of the specification as a dot graph highlighting the dependency structures between the various sorts."
      <> header "Autosubst 2 - Automatically generating substitutions for mutually recursive syntactic specifications" )
 
 --
 -- the actual business logic
 --
 
--- writes a file.
-writeFileOverwrite :: FilePath -> String -> IO ()
-writeFileOverwrite file content = do hFlush stdout; appendFile file content
-
--- if the file already exists, the user is prompted for overwrite permission for each file 
+-- writes a file. if the file already exists, the user is prompted for overwrite permission
 -- the boolean flag is used to force write and don't prompt
-checkProtection :: Bool -> FilePath -> IO Bool
-checkProtection forced file = do 
-    exists <- doesFileExist file 
-    if not exists
-      then return True
-    else if forced 
-      then removeFile file >> return True -- remove the file
+writeFileOverwriteProtected :: Bool -> FilePath -> String -> IO ()
+writeFileOverwriteProtected forced file content = do
+  exists <- doesFileExist file
+  if forced || not exists
+    then writeFile file content
     else do
       putStr $ "The file " ++ file ++ " already exists; overwrite? [y/n] "
       hFlush stdout
       c <- getLine
       if c /= "y"
-          then (putStrLn $ "Not writing to " ++ file ++ " and all subsequent files.") >> return False
-          else  removeFile file >> return True -- remove the file
+        then putStrLn $ "Not writing to " ++ file ++ " ..."
+        else writeFile file content
 
 generate :: Arguments -> Signature -> IO ()
 generate args sig = do
-  let prettyCodeE = either Left 
-                          (Right . (\codes -> map  (\(loc, c) -> (loc, (($ "") . displayS . renderPretty 1.0 (lineWidth args)) c)) codes)) -- printing according to arguments
-                          $ runGen sig (generateCode (prover args) (getFile (coqFile args))) -- run the code generation
-  case (coqFile args) of -- Printing of code
-    Just out -> either putStrLn 
-                      (\mfiles -> mapM (\f -> checkProtection (forceOverwrite args) (prependName f out)) (nub (map fst mfiles)) -- check whether all files can be overwritten 
-                                  >>= \bs -> if (foldl (&&) True bs) then mapM_ (\(f, c) -> writeFileOverwrite (prependName f out) c) mfiles else return ()) -- write all files
-                      prettyCodeE
+  let dotGraphE = runSig sig printDot
+  case (dotFile args) of
+    Just df -> either putStrLn (writeFileOverwriteProtected (forceOverwrite args) df) dotGraphE
+    Nothing -> return ()
+  let prettyCodeE = either Left (Right . (\codes -> map  (\(loc, c) -> (loc, (($ "") . displayS . renderPretty 1.0 (lineWidth args)) c)) codes)) $ runGen sig (generateCode (prover args))
+  case (coqFile args) of
+    Just out -> either putStrLn (mapM_ (\(f, c) -> writeFileOverwriteProtected (forceOverwrite args) (f ++ out) c)) prettyCodeE
     Nothing -> putStrLn $ either id (\xs -> concat $ (map snd) xs) prettyCodeE
 
--- Get the prefix of the Coq file so that we can later on export the right file.
-getFile :: Maybe String -> String 
-getFile (Just ('.' : xs)) = []
-getFile (Just (x : xs)) = x : getFile (Just xs)
-getFile _ = []
+-- Debugging:   putStrLn (show sig)
+
 
 mainProg :: Arguments -> IO ()
 mainProg args = do
@@ -110,9 +105,3 @@ mainProg args = do
     Just file -> parseFile file
     Nothing   -> parseStdIn
   either putStrLn (generate args) $ either Left buildSignature specification
-
-
-prependName :: String -> FilePath -> FilePath
-prependName prefix file  = reverse (f (reverse file))
-  where f [] = reverse prefix 
-        f (x : xs) = if (x : []) == "/" then  reverse prefix ++ x : xs else x : f xs
