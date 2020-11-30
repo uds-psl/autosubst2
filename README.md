@@ -1,5 +1,7 @@
 # Autosubst 2 
 
+*This is the `main` branch containing the development version of Autosubst 2. We recommend using the `main` branch in almost every case, since it exceeds the released beta versions in functionality and usability.*
+
 Formalizing syntactic theories with variable binders in a general-purpose proof assistant is hard.
 
 With Autosubst 2, we present a tool that:
@@ -68,14 +70,14 @@ Please direct any inquiries regarding this software via Github.
 
 ## Publications
 
-- **[Mechanising Syntax with Binders in Coq](https://www.ps.uni-saarland.de/Publications/details/Stark:2020:Mechanising.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/Stark_2020_Mechanising.pdf)
+- **[Mechanising Syntax with Binders in Coq](https://www.ps.uni-saarland.de/Publications/details/Stark:2020:Mechanising.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/Stark_2020_Mechanising.pdf) [*(Code)*](https://github.com/uds-psl/autosubst2/tree/v0.2-beta)
   *[Kathrin Stark](https://www.ps.uni-saarland.de/Publications/list/Kathrin_Stark.html)*
   PhD Thesis, Saarland University
-- **[Coq à la Carte - A Practical Approach to Modular Syntax with Binders](https://www.ps.uni-saarland.de/Publications/details/ForsterStark:2020:Coq.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/ForsterStark_2020_Coq.pdf)
+- **[Coq à la Carte - A Practical Approach to Modular Syntax with Binders](https://www.ps.uni-saarland.de/Publications/details/ForsterStark:2020:Coq.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/ForsterStark_2020_Coq.pdf) [*(Code)*](https://github.com/uds-psl/coq-a-la-carte-cpp20)
   *[Yannick Forster](https://www.ps.uni-saarland.de/Publications/list/Yannick_Forster.html), [Kathrin Stark](https://www.ps.uni-saarland.de/Publications/list/Kathrin_Stark.html)*
   9th ACM SIGPLAN International Conference on Certified Programs and Proofs, CPP 2020, New Orleans, USA
-- **[Autosubst 2: Reasoning with Multi-Sorted de Bruijn Terms and Vector Substitutions](https://www.ps.uni-saarland.de/Publications/details/StarkEtAl:2018:Autosubst-2:.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/StarkEtAl_2018_Autosubst-2_.pdf)
-  *[Kathrin Stark](https://www.ps.uni-saarland.de/Publications/list/Kathrin_Stark.html), [Steven Schäfer](https://www.ps.uni-saarland.de/Publications/list/Steven_Schäfer.html), [Jonas Kaiser](https://www.ps.uni-saarland.de/Publications/list/Jonas_Kaiser.html)*
+- **[Autosubst 2: Reasoning with Multi-Sorted de Bruijn Terms and Vector Substitutions](https://www.ps.uni-saarland.de/Publications/details/StarkEtAl:2018:Autosubst-2:.html)**  [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/StarkEtAl_2018_Autosubst-2_.pdf) [*(Code)*](https://github.com/uds-psl/autosubst2/tree/v0.1-beta)
+  *[Kathrin Stark](https://www.ps.uni-saarland.de/Publications/list/Kathrin_Stark.html), [Steven Schäfer](https://www.ps.uni-saarland.de/Publications/list/Steven_Schäfer.html), [Jonas Kaiser](https://www.ps.uni-saarland.de/Publications/list/Jonas_Kaiser.html)* 
   8th ACM SIGPLAN International Conference on Certified Programs and Proofs, CPP 2019, Cascais, Portugal, January 14-15, 2019
 - **[Autosubst 2: Towards Reasoning with Multi-Sorted de Bruijn Terms and Vector Substitutions](https://www.ps.uni-saarland.de/Publications/details/KaiserSchaeferStark:2017:Autosubst-2:.html)** [*(pdf)*](https://www.ps.uni-saarland.de/Publications/documents/KaiserSchaeferStark_2017_Autosubst-2_.pdf)
   *[Jonas Kaiser](https://www.ps.uni-saarland.de/Publications/list/Jonas_Kaiser.html), [Steven Schäfer](https://www.ps.uni-saarland.de/Publications/list/Steven_Schäfer.html), [Kathrin Stark](https://www.ps.uni-saarland.de/Publications/list/Kathrin_Stark.html)*
