@@ -1,5 +1,7 @@
 # Autosubst 2 
 
+**This version of Autosubst 2 corresponds to the [CPP '19 paper](https://dl.acm.org/doi/10.1145/3293880.3294101). The content of directory just archives the content from https://www.ps.uni-saarland.de/extras/autosubst2/download/autosubst2.tar.xz. If you are not specifically interested in this version, we strongly recommend using the most up-to-date version of Autosubst 2 from https://github.com/uds-psl/autosubst2.**
+
 Formalizing syntactic theories with variable binders in a general-purpose proof assistant is hard.
 
 With Autosubst 2, we present a tool that:
