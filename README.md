@@ -1,5 +1,7 @@
 # Autosubst 2 
 
+**This version of Autosubst 2 corresponds to [Kathrin Stark's PhD thesis](https://www.ps.uni-saarland.de/~kstark/thesis/). The content of directory just archives the content from https://www.ps.uni-saarland.de/~kstark/thesis/download/autosubst2.tar.xz. If you are not specifically interested in this version, we strongly recommend using the most up-to-date version of Autosubst 2 from https://github.com/uds-psl/autosubst2.**
+
 Formalizing syntactic theories with variable binders in a general-purpose proof assistant is hard.
 
 With Autosubst 2, we present a tool that:
