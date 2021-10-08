@@ -8,7 +8,7 @@ import           Data.List            as L
 
 import           Control.Monad.Except
 import           Control.Monad.Reader
-import           Control.Monad.RWS    hiding ((<>))
+import           Control.Monad.RWS    hiding ((<>),Ap)
 
 -- Contains syntax for functions, inductive datatypes...
 type Identifier = String
