@@ -55,8 +55,8 @@ Require Export syntax.
 Per default, the tool will not silently overwrite existing files but request for user confirmation. This can be explicitly disabled via the ``-f`` option. The maximal line width of the generated Coq code is 140 characters, but this can also be adjusted via the ``-w`` option.
 
 It is furthermore possible to choose for which prover code is generated.
-At the moment, *well-scoped Coq* code (``-p Coq``), *unscoped Coq* code (``-p UCoq``), and output for *only modular syntax* (``-p ECoq``) are available.
-Not all modes are co [modexp.sig](signatures/modexp.sig) mpatible with all syntactic inputs and the tool will output a corresponding error message.
+At the moment, *well-scoped Coq* code (``-p Coq``), *unscoped Coq* code (``-p UCoq``), and output for *only modular syntax* (``-p ECoq``) (see [modexp.sig](signatures/modexp.sig)) are available.
+Not all modes are compatible with all syntactic inputs and the tool will output a corresponding error message.
 
 The following command prints an overview of all options:
 
