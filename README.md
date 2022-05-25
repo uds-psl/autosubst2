@@ -71,7 +71,7 @@ Please direct any inquiries regarding this software via Github.
 ## Other Implementations 
 This main branch contains the development version of Autosubst 2 implemented in Haskell as described in the referred publications. 
 
-An independent implementation of Autosubst 2 in OCaml developed by Adrian Dapprich is available at https://github.com/uds-psl/autosubst2-ocaml. This implementation can be installed via ``opam`` and does not support modular syntax.
+An independent implementation of Autosubst 2 in OCaml developed by Adrian Dapprich is available at https://github.com/uds-psl/autosubst-ocaml. This implementation can be installed via ``opam`` and does not support modular syntax.
 
 Another independent implementation of Autosusbt 2 in MetaCoq is available at https://github.com/uds-psl/autosubst-metacoq. It can be used as a command from within Coq, but for now remains a proof of concept with some missing features.
 
