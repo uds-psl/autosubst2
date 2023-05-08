@@ -1,8 +1,8 @@
 (** * Chapter 7 : Modular Syntax *)
 
-Require Import String List Omega.
+Require Import String List Psatz.
 
-Require Import Equations.Equations.
+From Equations Require Import Equations.
 Set Implicit Arguments.
 Unset Strict Implicit.
 
@@ -18,9 +18,9 @@ Lemma size_ind (P : nat -> Prop) :
 Proof.
   intros H x. apply H.
   induction x.
-  - intros y. omega.
-  - intros y. intros [] % le_lt_or_eq.
-    + apply IHx; omega.
+  - intros y. lia.
+  - intros y. intros [] % Lt.le_lt_or_eq_stt.
+    + apply IHx; lia.
     + apply H. injection H0. now intros ->.
 Qed.
 
@@ -41,7 +41,7 @@ Proof.
   now rewrite <- !retract_works, H.
 Qed.
 
-Instance retract_option X Y : retract X Y -> retract (option X) (option Y).
+#[export]Instance retract_option X Y : retract X Y -> retract (option X) (option Y).
 Proof.
   intros. unshelve eexists.
   - intros []. exact (Some (retract_I x)). exact None.
@@ -61,7 +61,7 @@ Notation retr := (retract_R).
 Notation included F T := (retract (F T) T)%type.
 
 Class Bundle (func : Type -> Type) (In : forall X, X -> func X -> Prop) := make_Bundle {}.
-Existing Instance make_Bundle.
+#[export]Existing Instance make_Bundle.
 
 Definition get_In {func In} {bundle : @Bundle func In} := In.
 

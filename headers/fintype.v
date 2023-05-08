@@ -368,4 +368,4 @@ Tactic Notation "auto_case" tactic(t) :=  (match goal with
 
 
 (** Functor instances which can be added later on. *)
-Hint Rewrite  @scons_p_comp scons_p_head scons_p_tail @scons_p_head' @scons_p_tail': FunctorInstances.
+#[export]Hint Rewrite  @scons_p_comp scons_p_head scons_p_tail @scons_p_head' @scons_p_tail': FunctorInstances.
